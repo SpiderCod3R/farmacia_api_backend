@@ -1,0 +1,39 @@
+version: '3'
+services:
+  db:
+    image: postgres:12
+    env_file:
+      - .variables.env
+    ports:
+      - 5433:5433
+    volumes:
+      - projetofarmacia_db:/var/lib/postgresql/data
+ 
+  mongo:
+    image: mongo
+    command: --serviceExecutor adaptive
+    ports: 
+      - 2077:2077
+    restart: always
+    env_file:
+      - .variables.env
+ 
+  app:
+    build: .
+    container_name: projetofarmacia_rails
+    command:  bash project.sh
+
+    volumes:
+      - '.:/projetofarmacia'
+      - bundler_gems:/usr/local/bundle/
+    env_file:
+      - .variables.env
+    depends_on:
+      - db
+      - mongo
+
+volumes:
+  projetofarmacia_db:
+  bundler_gems:
+  db:
+  mongo:
